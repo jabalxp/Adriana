@@ -35,23 +35,12 @@ $cursos = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <form action="../../api/process_atestado.php" method="POST" enctype="multipart/form-data" style="margin-top: 2rem;">
                 <input type="hidden" name="email_pessoal" value="<?php echo htmlspecialchars($email_aluno); ?>">
                 
-                <!-- Período e Curso -->
-                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <div>
-                        <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Período que estuda:</label>
-                        <select name="periodo" class="form-control" style="background: #fff; color: #334155; border: 1px solid #cbd5e1;" required>
-                            <option value="">Selecione...</option>
-                            <option value="Manhã">Manhã</option>
-                            <option value="Tarde">Tarde</option>
-                            <option value="Noite">Noite</option>
-                            <option value="Integral">Integral</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Curso / Turma:</label>
-                        <select name="turma_id" class="form-control" style="background: #fff; color: #334155; border: 1px solid #cbd5e1;" required>
-                            <option value="">Selecione...</option>
-                            <?php
+                <!-- Curso / Turma -->
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Curso / Turma:</label>
+                    <select name="turma_id" class="form-control" style="background: #fff; color: #334155; border: 1px solid #cbd5e1;" required>
+                        <option value="">Selecione...</option>
+                        <?php
 // Em um cenário real, usaríamos AJAX para filtrar turmas por curso. 
 // Aqui vamos listar as turmas do banco.
 $result_turmas = mysqli_query($conn, "SELECT t.id, t.nome, c.nome as curso_nome FROM turmas t JOIN cursos c ON t.curso_id = c.id");
@@ -59,8 +48,7 @@ while ($t = mysqli_fetch_assoc($result_turmas)) {
     echo "<option value='{$t['id']}'>{$t['curso_nome']} - {$t['nome']}</option>";
 }
 ?>
-                        </select>
-                    </div>
+                    </select>
                 </div>
 
                 <!-- Nome do Aluno -->
@@ -69,7 +57,7 @@ while ($t = mysqli_fetch_assoc($result_turmas)) {
                     <select name="aluno_id" id="aluno_id" class="form-control" style="background: #fff; color: #334155; border: 1px solid #cbd5e1;" required disabled>
                         <option value="">Selecione a turma primeiro...</option>
                     </select>
-                    <input type="text" name="nome_aluno_novo" id="novo_aluno_nome" class="form-control" style="display:none; margin-top: 0.5rem; padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;" placeholder="Digite seu nome completo">
+                    <input type="text" name="nome_aluno_novo" id="novo_aluno_nome" class="form-control" style="display:none; margin-top: 0.5rem; padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" placeholder="Digite seu nome completo">
                 </div>
 
                 <!-- Tipo de Documento -->
@@ -91,38 +79,38 @@ while ($t = mysqli_fetch_assoc($result_turmas)) {
                     <!-- Outro Motivo (Input Texto) -->
                     <div id="field-outro-motivo" style="display:none; margin-bottom: 1rem;">
                         <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Especifique o motivo:</label>
-                        <input type="text" name="outro_motivo" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;">
+                        <input type="text" name="outro_motivo" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;">
                     </div>
 
                     <!-- Datas (Médico) -->
                     <div id="field-datas" style="display:none; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
                         <div>
                             <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Data de Início:</label>
-                            <input type="date" name="data_inicio" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;">
+                            <input type="date" name="data_inicio" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" required>
                         </div>
                         <div>
                             <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Data de Término:</label>
-                            <input type="date" name="data_fim" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;">
+                            <input type="date" name="data_fim" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" required>
                         </div>
                     </div>
 
                     <!-- CID / Código / Motivo -->
                     <div id="field-cid" style="display:none;">
                         <label id="label-cid" style="display:block; margin-bottom:0.5rem; font-weight:600;">CID ou Motivo:</label>
-                        <input type="text" name="cid_motivo" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;">
+                        <input type="text" name="cid_motivo" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;">
                     </div>
 
                     <!-- Código Judicial -->
                     <div id="field-judicial" style="display:none;">
                         <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Código da Declaração Judicial:</label>
-                        <input type="text" name="codigo_judicial" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1;" placeholder="Ex: 123.456.789">
+                        <input type="text" name="codigo_judicial" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" placeholder="Ex: 123.456.789">
                     </div>
                 </div>
 
                 <!-- Upload de Arquivo (Sempre visível conforme Projeto.md) -->
                 <div class="form-group" style="margin-bottom: 2rem;">
                     <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Anexar Foto do Atestado / Documento:</label>
-                    <div style="border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 8px; text-align: center; background: #fff;">
+                    <div style="border: 2px dashed #cbd5e1; padding: 2rem; border-radius: 8px; text-align: center; background: #fff; color: #334155;">
                         <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: #94a3b8; margin-bottom: 1rem;"></i>
                         <input type="file" name="anexo" id="anexo" accept="image/*,.pdf" required style="display: block; margin: 0 auto;">
                         <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem;">Formatos aceitos: JPG, PNG, PDF (Máx. 5MB)</p>
