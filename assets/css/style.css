@@ -1,0 +1,534 @@
+:root {
+    --primary-color: #ff3b3b;
+    --primary-hover: #e63434;
+    --bg-dark: #0f172a;
+    --bg-darker: #020617;
+    --card-bg: #1e293b;
+    --text-white: #ffffff;
+    --text-muted: #94a3b8;
+    --input-bg: rgba(30, 41, 59, 0.5);
+    --border-color: rgba(255, 59, 59, 0.3);
+    --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-white);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* Background Plexus Effect (Placeholder for actual Canvas/JS) */
+.bg-plexus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    z-index: -1;
+}
+
+/* Canvas for Plexus */
+#canvas-plexus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.premium-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-premium);
+    text-align: center;
+}
+
+.logo-senai {
+    background: var(--primary-color);
+    padding: 1rem 2rem;
+    display: inline-block;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.logo-senai span {
+    font-weight: 900;
+    font-size: 2.5rem;
+    font-style: italic;
+    letter-spacing: -2px;
+}
+
+/* Decoration lines for SENAI logo */
+.logo-senai::before,
+.logo-senai::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: white;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+    position: relative;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.input-eye {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 2.8rem;
+    background: var(--input-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(255, 59, 59, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 59, 59, 0.4);
+}
+
+.btn-primary svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* Dashboard Styles */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    background: #f1f5f9;
+}
+
+.sidebar {
+    background: #ff3b3b;
+    color: white;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-logo {
+    font-size: 2rem;
+    font-weight: 900;
+    font-style: italic;
+    padding: 0 2rem;
+    margin-bottom: 3rem;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar-nav {
+    list-style: none;
+    flex-grow: 1;
+}
+
+.nav-item a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-item.active a,
+.nav-item a:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.main-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.top-bar {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #334155;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #ff3b3b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    border-bottom: 4px solid transparent;
+}
+
+.stat-card.red {
+    border-bottom-color: #ef4444;
+}
+
+.stat-card.blue {
+    border-bottom-color: #3b82f6;
+}
+
+.stat-card.green {
+    border-bottom-color: #22c55e;
+}
+
+.stat-card.orange {
+    border-bottom-color: #f59e0b;
+}
+
+.stat-card.purple {
+    border-bottom-color: #a855f7;
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.stat-info h3 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info p {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.content-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+/* ===== Table Styles ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead th {
+    text-align: left;
+    padding: 1rem;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #e2e8f0;
+    background: #f8fafc;
+    white-space: nowrap;
+}
+
+table tbody td {
+    padding: 0.875rem 1rem;
+    color: #334155;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+table tbody tr {
+    transition: background 0.15s ease;
+}
+
+table tbody tr:hover {
+    background: #f8fafc;
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== Badge Styles ===== */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge.aceito {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge.pendente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge.recusado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge.blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ===== DataTables Overrides ===== */
+.dataTables_wrapper {
+    font-family: 'Inter', sans-serif;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 1.25rem;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 0.875rem;
+    margin: 0 0.5rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: #ff3b3b;
+    box-shadow: 0 0 0 3px rgba(255, 59, 59, 0.1);
+}
+
+.dataTables_wrapper .dataTables_info {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    padding-top: 1.25rem;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    padding-top: 1.25rem;
+    text-align: right;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    margin: 0 0.15rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #64748b !important;
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: white;
+    transition: all 0.15s ease;
+    text-decoration: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1;
+    color: #1e293b !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #ff3b3b !important;
+    border-color: #ff3b3b;
+    color: white !important;
+    font-weight: 600;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    background: white !important;
+    border-color: #e2e8f0;
+    color: #64748b !important;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    cursor: pointer;
+    position: relative;
+    padding-right: 1.75rem;
+}
+
+table.dataTable thead .sorting::after,
+table.dataTable thead .sorting_asc::after,
+table.dataTable thead .sorting_desc::after {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.65rem;
+    color: #cbd5e1;
+}
+
+table.dataTable thead .sorting::after {
+    content: '\f0dc';
+}
+
+table.dataTable thead .sorting_asc::after {
+    content: '\f0de';
+    color: #ff3b3b;
+}
+
+table.dataTable thead .sorting_desc::after {
+    content: '\f0dd';
+    color: #ff3b3b;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
