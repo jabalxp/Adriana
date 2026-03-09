@@ -43,6 +43,15 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
+                <li class="nav-item">
+                    <a href="atestado.php"><i class="fa-solid fa-clipboard-check"></i> Atestados</a>
+                </li>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
+                <li class="nav-item">
+                    <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
+                </li>
+                <?php
+endif; ?>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
                 <li class="nav-item" style="list-style:none;">
