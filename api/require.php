@@ -12,4 +12,9 @@ if (!$conn) {
 }
 
 mysqli_set_charset($conn, "utf8mb4");
+
+// Normalizar nível de usuário para evitar problemas de case-sensitivity ou espaços
+if (isset($_SESSION['user_nivel'])) {
+    $_SESSION['user_nivel'] = trim(ucfirst(strtolower($_SESSION['user_nivel'])));
+}
 ?>

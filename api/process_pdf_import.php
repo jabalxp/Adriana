@@ -2,8 +2,8 @@
 session_start();
 require_once 'require.php';
 
-// Verificar se é Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['user_nivel'] !== 'Administrador') {
+// Verificar se tem permissão
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_nivel'], ['Administrador', 'Gerente', 'Auxiliar'])) {
     http_response_code(403);
     echo json_encode(['error' => 'Acesso negado']);
     exit();

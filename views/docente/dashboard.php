@@ -65,11 +65,12 @@ $aguardando_analise = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
+                <?php endif; ?>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
-                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Dados</a>
+                    <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -80,10 +81,15 @@ endif; ?>
                 <li class="nav-item">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
                 </li>
-                <?php
-endif; ?>
+                <li class="nav-item">
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
+                </li>
             </nav>
-            <div class="sidebar-footer" style="padding: 2rem;">
+            <div class="sidebar-footer">
                 <li class="nav-item" style="list-style:none;">
                     <a href="../../api/logout.php" style="background: rgba(0,0,0,0.2); border-radius: 8px;"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
                 </li>
@@ -94,6 +100,9 @@ endif; ?>
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
+                <button id="sidebar-toggle" style="display: none; background: #ff3b3b; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-bars"></i> Menu
+                </button>
                 <div class="user-info">
                     <div class="user-avatar">
                         <i class="fa-solid fa-user"></i>
@@ -174,11 +183,11 @@ endif; ?>
                                 </td>
                                 <td style="text-align: right; white-space: nowrap;">
                                     <?php if ($user_nivel === 'Gerente' && $at['status'] === 'Pendente'): ?>
-                                        <a href="../../api/gerenciar_atestado.php?id=<?php echo (int)$at['id']; ?>&acao=aceitar" style="color: #22c55e; margin-right: 0.5rem;" title="Aceitar"><i class="fa-solid fa-check"></i></a>
-                                        <a href="../../api/gerenciar_atestado.php?id=<?php echo (int)$at['id']; ?>&acao=recusar" style="color: #ef4444; margin-right: 0.5rem;" title="Recusar"><i class="fa-solid fa-xmark"></i></a>
+                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Aceito" style="color: #22c55e; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Aceitar"><i class="fa-solid fa-check"></i></button>
+                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Recusado" style="color: #ef4444; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Recusar"><i class="fa-solid fa-xmark"></i></button>
                                     <?php
     elseif ($user_nivel === 'Auxiliar' && $at['status'] === 'Aceito' && !$at['professor_confirmou']): ?>
-                                        <a href="../../api/gerenciar_atestado.php?id=<?php echo (int)$at['id']; ?>&acao=confirmar" style="color: #3b82f6; margin-right: 0.5rem;" title="Confirmar Recebimento"><i class="fa-solid fa-clipboard-check"></i></a>
+                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="confirmar" style="color: #3b82f6; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Confirmar Recebimento"><i class="fa-solid fa-clipboard-check"></i></button>
                                     <?php
     endif; ?>
                                     
@@ -231,6 +240,54 @@ endforeach; ?>
             pageLength: 10,
             order: [[0, 'asc']],
             columnDefs: [{ orderable: false, targets: [4] }]
+        });
+
+        // Handler para aprovar/recusar/confirmar no Dashboard
+        $(document).on('click', '.btn-acao-atestado', function(e) {
+            e.preventDefault();
+            const id = $(this).data('id');
+            const acao = $(this).data('acao'); // "Aceito", "Recusado" ou "confirmar"
+            
+            let actionName = 'update_status';
+            let status = acao;
+
+            if (acao === 'confirmar') {
+                actionName = 'confirmar_recebimento';
+            }
+
+            if(confirm('Deseja realmente ' + (acao === 'confirmar' ? 'confirmar recebimento' : acao.toLowerCase()) + ' este atestado?')) {
+                $.post('../../api/gerenciar_atestado.php', {
+                    action: actionName,
+                    id: id,
+                    status: status
+                }, function(response) {
+                    const res = JSON.parse(response);
+                    if(res.success) {
+                        location.reload();
+                    } else {
+                        alert(res.message);
+                    }
+                });
+            }
+        });
+
+        // Toggle Sidebar Mobile
+        $('#sidebar-toggle').on('click', function() {
+            $('.sidebar').toggleClass('active');
+        });
+
+        // Mostrar botão apenas em mobile via CSS inline fallback ou detecção
+        if ($(window).width() <= 768) {
+            $('#sidebar-toggle').show();
+        }
+        
+        $(window).resize(function() {
+            if ($(window).width() <= 768) {
+                $('#sidebar-toggle').show();
+            } else {
+                $('#sidebar-toggle').hide();
+                $('.sidebar').removeClass('active');
+            }
         });
     });
     </script>

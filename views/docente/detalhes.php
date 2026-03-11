@@ -12,11 +12,7 @@ $user_id = $_SESSION['user_id'];
 $user_nome = $_SESSION['user_nome'];
 $user_nivel = $_SESSION['user_nivel'];
 
-// Apenas Gerente e Administrador acessam esta página
-if ($user_nivel === 'Auxiliar') {
-    header("Location: dashboard.php");
-    exit();
-}
+// Removido o bloqueio para Auxiliar, agora eles têm acesso limitado a esta página
 
 // Estatísticas detalhadas
 $stats_detalhes = [];
@@ -119,11 +115,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
+                <?php endif; ?>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
-                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Dados</a>
+                    <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -132,6 +129,14 @@ endif; ?>
                 </li>
                 <li class="nav-item active">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
+                </li>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
+                <li class="nav-item">
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
                 </li>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
@@ -144,6 +149,9 @@ endif; ?>
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-bar">
+                <button id="sidebar-toggle" style="display: none; background: #ff3b3b; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-bars"></i> Menu
+                </button>
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
@@ -159,6 +167,7 @@ endif; ?>
             </div>
 
             <!-- Advanced Stats Section -->
+            <?php if ($user_nivel !== 'Auxiliar'): ?>
             <div class="page-header" style="margin: 0 0 1rem 0;">
                 <h3 style="font-size: 1.2rem; font-weight: 700; color: #1e293b;">
                     <i class="fa-solid fa-chart-line" style="color: #ff3b3b; margin-right: 0.5rem;"></i>
@@ -196,25 +205,28 @@ endif; ?>
                     </div>
                 </div>
             </div>
+            <?php
+endif; ?>
 
             <!-- Charts Section -->
             <div class="charts-container">
                 <div class="chart-card">
                     <h4 style="margin-bottom: 1rem; color: #1e293b; font-size: 0.9rem; font-weight: 700;">Distribuição por Status</h4>
-                    <div style="height: 250px;"><canvas id="chartStatus"></canvas></div>
+                    <div style="position: relative; height: 250px; width: 100%;"><canvas id="chartStatus"></canvas></div>
                 </div>
                 <div class="chart-card">
                     <h4 style="margin-bottom: 1rem; color: #1e293b; font-size: 0.9rem; font-weight: 700;">Volume por Turma (Top 8)</h4>
-                    <div style="height: 250px;"><canvas id="chartTurmas"></canvas></div>
+                    <div style="position: relative; height: 250px; width: 100%;"><canvas id="chartTurmas"></canvas></div>
                 </div>
             </div>
 
             <div class="chart-card" style="margin-bottom: 2rem;">
                 <h4 style="margin-bottom: 1rem; color: #1e293b; font-size: 0.9rem; font-weight: 700;">Evolução Semestral</h4>
-                <div style="height: 300px;"><canvas id="chartMensal"></canvas></div>
+                <div style="position: relative; height: 300px; width: 100%;"><canvas id="chartMensal"></canvas></div>
             </div>
 
             <!-- Stats by Turma Table -->
+            <?php if ($user_nivel !== 'Auxiliar'): ?>
             <div class="content-card">
                 <div class="card-header" style="margin-bottom: 1.5rem;">
                     <h4 style="font-weight: 700; color: #1e293b;">Destaques por Turma</h4>
@@ -230,20 +242,19 @@ endif; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-$result_turmas_all = mysqli_query($conn, "SELECT * FROM turmas");
-while ($t = mysqli_fetch_assoc($result_turmas_all)):
-    // Aluno com mais na turma
-    $stmt = mysqli_prepare($conn, "SELECT al.nome, COUNT(a.id) as total FROM atestados a JOIN alunos al ON a.aluno_id = al.id WHERE a.turma_id = ? GROUP BY a.aluno_id ORDER BY total DESC LIMIT 1");
-    mysqli_stmt_bind_param($stmt, "i", $t['id']);
-    mysqli_stmt_execute($stmt);
-    $mais = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+                        <?php $result_turmas_all = mysqli_query($conn, "SELECT * FROM turmas");
+    while ($t = mysqli_fetch_assoc($result_turmas_all)):
+        // Aluno com mais na turma
+        $stmt = mysqli_prepare($conn, "SELECT al.nome, COUNT(a.id) as total FROM atestados a JOIN alunos al ON a.aluno_id = al.id WHERE a.turma_id = ? GROUP BY a.aluno_id ORDER BY total DESC LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "i", $t['id']);
+        mysqli_stmt_execute($stmt);
+        $mais = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
-    // Aluno com menos na turma
-    $stmt = mysqli_prepare($conn, "SELECT al.nome, COUNT(a.id) as total FROM atestados a JOIN alunos al ON a.aluno_id = al.id WHERE a.turma_id = ? GROUP BY a.aluno_id ORDER BY total ASC LIMIT 1");
-    mysqli_stmt_bind_param($stmt, "i", $t['id']);
-    mysqli_stmt_execute($stmt);
-    $menos = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        // Aluno com menos na turma
+        $stmt = mysqli_prepare($conn, "SELECT al.nome, COUNT(a.id) as total FROM atestados a JOIN alunos al ON a.aluno_id = al.id WHERE a.turma_id = ? GROUP BY a.aluno_id ORDER BY total ASC LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "i", $t['id']);
+        mysqli_stmt_execute($stmt);
+        $menos = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 ?>
                         <tr>
                             <td><strong><?php echo $t['nome']; ?></strong></td>
@@ -253,10 +264,12 @@ while ($t = mysqli_fetch_assoc($result_turmas_all)):
                             <td><span class="badge recusado"><?php echo $menos['total'] ?? 0; ?></span></td>
                         </tr>
                         <?php
-endwhile; ?>
+    endwhile; ?>
                     </tbody>
                 </table>
             </div>
+            <?php
+endif; ?>
         </main>
     </div>
 
@@ -294,7 +307,7 @@ endwhile; ?>
                 labels: <?php echo json_encode($chart_status['labels']); ?>,
                 datasets: [{
                     data: <?php echo json_encode($chart_status['data']); ?>,
-                    backgroundColor: ['#eab308', '#22c55e', '#ef4444'],
+                    backgroundColor: ['#22c55e', '#ef4444', '#eab308'],
                     borderWidth: 0
                 }]
             },
@@ -355,6 +368,24 @@ endwhile; ?>
                     y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
                     x: { grid: { display: false } }
                 }
+            }
+        });
+
+        // Toggle Sidebar Mobile
+        $('#sidebar-toggle').on('click', function() {
+            $('.sidebar').toggleClass('active');
+        });
+
+        if ($(window).width() <= 768) {
+            $('#sidebar-toggle').show();
+        }
+        
+        $(window).resize(function() {
+            if ($(window).width() <= 768) {
+                $('#sidebar-toggle').show();
+            } else {
+                $('#sidebar-toggle').hide();
+                $('.sidebar').removeClass('active');
             }
         });
     });

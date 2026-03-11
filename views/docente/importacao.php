@@ -2,7 +2,7 @@
 session_start();
 require_once '../../api/require.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_nivel'] !== 'Administrador') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_nivel'], ['Administrador', 'Gerente', 'Auxiliar'])) {
     header("Location: ../login.php");
     exit();
 }
@@ -34,12 +34,16 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
                 </li>
+                <?php if ($user_nivel === 'Administrador'): ?>
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <li class="nav-item active">
-                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Dados</a>
+                <?php endif; ?>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
+                <li class="nav-item">
+                    <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -50,10 +54,15 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
                 </li>
-                <?php
-endif; ?>
+                <li class="nav-item active">
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
+                </li>
             </nav>
-            <div class="sidebar-footer" style="padding: 2rem;">
+            <div class="sidebar-footer">
                 <li class="nav-item" style="list-style:none;">
                     <a href="../../api/logout.php" style="background: rgba(0,0,0,0.2); border-radius: 8px;"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
                 </li>
@@ -62,10 +71,13 @@ endif; ?>
 
         <main class="main-content">
             <header class="top-bar">
+                <button id="sidebar-toggle" style="display: none; background: #ff3b3b; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-bars"></i> Menu
+                </button>
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
-                        <span style="display:block; font-size: 0.8rem; color: #64748b;">Adm. Central</span>
+                        <span style="display:block; font-size: 0.8rem; color: #64748b;"><?php echo $user_nivel; ?></span>
                         <strong style="font-weight: 700;"><?php echo $user_nome; ?></strong>
                     </div>
                 </div>
@@ -74,9 +86,9 @@ endif; ?>
             <div class="page-header" style="margin-bottom: 2rem;">
                 <h2 style="font-size: 1.8rem; font-weight: 700; color: #1e293b;">Importar Alunos e Turmas</h2>
                 <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                    <button id="btn-tab-csv" class="btn-tab active" onclick="switchTab('csv')">Importar CSV</button>
+                    <button id="btn-tab-excel" class="btn-tab active" onclick="switchTab('excel')">Importar Excel</button>
                     <button id="btn-tab-pdf" class="btn-tab" onclick="switchTab('pdf')">Importar PDF</button>
-                    <button id="btn-tab-excel" class="btn-tab" onclick="switchTab('excel')">Importar Excel</button>
+                    <button id="btn-tab-csv" class="btn-tab" onclick="switchTab('csv')">Importar CSV</button>
                 </div>
             </div>
 
@@ -118,7 +130,7 @@ endif; ?>
 
             <div class="content-card" style="max-width: 850px;">
                 <!-- Seção CSV -->
-                <div id="section-csv" class="import-section active">
+                <div id="section-csv" class="import-section">
                     <div class="card-header" style="margin-bottom: 1.5rem;">
                         <h4 style="font-weight: 700;">Instruções de Importação CSV</h4>
                     </div>
@@ -187,7 +199,7 @@ endif; ?>
                 </div>
 
                 <!-- Seção Excel -->
-                <div id="section-excel" class="import-section">
+                <div id="section-excel" class="import-section active">
                     <div class="card-header" style="margin-bottom: 1.5rem;">
                         <h4 style="font-weight: 700;">Importar via Excel (.xlsx)</h4>
                     </div>
@@ -355,20 +367,29 @@ endif; ?>
                     }
                 }
             </script>
-            
-            <?php if (isset($_GET['success'])): ?>
-                <div style="margin-top: 1.5rem; background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; border: 1px solid #bbf7d0; display:flex; align-items:center; gap: 0.5rem;">
-                    <i class="fa-solid fa-circle-check"></i> Importação concluída com sucesso! <?php echo $_GET['success']; ?> registros processados.
-                </div>
-            <?php
-endif; ?>
 
-            <?php if (isset($_GET['error'])): ?>
-                <div style="margin-top: 1.5rem; background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; border: 1px solid #fecaca; display:flex; align-items:center; gap: 0.5rem;">
-                    <i class="fa-solid fa-circle-xmark"></i> Erro: <?php echo htmlspecialchars($_GET['error']); ?>
-                </div>
-            <?php
-endif; ?>
+            <!-- Script para Sidebar Mobile -->
+            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    $('#sidebar-toggle').on('click', function() {
+                        $('.sidebar').toggleClass('active');
+                    });
+
+                    if ($(window).width() <= 768) {
+                        $('#sidebar-toggle').show();
+                    }
+                    
+                    $(window).resize(function() {
+                        if ($(window).width() <= 768) {
+                            $('#sidebar-toggle').show();
+                        } else {
+                            $('#sidebar-toggle').hide();
+                            $('.sidebar').removeClass('active');
+                        }
+                    });
+                });
+            </script>
         </main>
     </div>
 </body>

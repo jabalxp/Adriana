@@ -40,11 +40,12 @@ $turmas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
+                <?php endif; ?>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
-                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Dados</a>
+                    <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <li class="nav-item active">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -55,8 +56,13 @@ endif; ?>
                 <li class="nav-item">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
                 </li>
-                <?php
-endif; ?>
+                <li class="nav-item">
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
+                </li>
+                <?php endif; ?>
+                <li class="nav-item">
+                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
+                </li>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
                 <li class="nav-item" style="list-style:none;">
@@ -67,6 +73,9 @@ endif; ?>
 
         <main class="main-content">
             <header class="top-bar">
+                <button id="sidebar-toggle" style="display: none; background: #ff3b3b; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-bars"></i> Menu
+                </button>
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
@@ -399,6 +408,24 @@ while ($c = mysqli_fetch_assoc($cursos_res)) {
         $('#modal-container').click(function(e) {
             if ($(e.target).is('#modal-container')) {
                 closeModal();
+            }
+        });
+
+        // Toggle Sidebar Mobile
+        $('#sidebar-toggle').on('click', function() {
+            $('.sidebar').toggleClass('active');
+        });
+
+        if ($(window).width() <= 768) {
+            $('#sidebar-toggle').show();
+        }
+        
+        $(window).resize(function() {
+            if ($(window).width() <= 768) {
+                $('#sidebar-toggle').show();
+            } else {
+                $('#sidebar-toggle').hide();
+                $('.sidebar').removeClass('active');
             }
         });
     });

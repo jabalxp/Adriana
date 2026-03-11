@@ -31,15 +31,30 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="dashboard.php"><i class="fa-solid fa-gauge"></i> Dashboard</a>
                 </li>
-                <?php if ($user_nivel === 'Gerente'): ?>
+                <?php if ($user_nivel === 'Administrador'): ?>
+                <li class="nav-item">
+                    <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
+                </li>
+                <?php endif; ?>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php
-endif; ?>
+                <?php endif; ?>
                 <li class="nav-item">
-                    <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Minhas Turmas</a>
+                    <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
+                <li class="nav-item">
+                    <a href="atestado.php"><i class="fa-solid fa-clipboard-check"></i> Atestados</a>
+                </li>
+                <?php if ($user_nivel !== 'Auxiliar'): ?>
+                <li class="nav-item">
+                    <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
+                </li>
+                <li class="nav-item">
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
+                </li>
+                <?php endif; ?>
                 <li class="nav-item active">
                     <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
                 </li>
@@ -53,6 +68,9 @@ endif; ?>
 
         <main class="main-content">
             <header class="top-bar">
+                <button id="sidebar-toggle" style="display: none; background: #ff3b3b; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-bars"></i> Menu
+                </button>
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
@@ -72,7 +90,30 @@ endif; ?>
                 <h3 style="color: #64748b;">Calendário em desenvolvimento</h3>
                 <p style="color: #94a3b8;">Em breve você poderá visualizar todos os prazos aqui.</p>
             </div>
+            </div>
         </main>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#sidebar-toggle').on('click', function() {
+                $('.sidebar').toggleClass('active');
+            });
+
+            if ($(window).width() <= 768) {
+                $('#sidebar-toggle').show();
+            }
+            
+            $(window).resize(function() {
+                if ($(window).width() <= 768) {
+                    $('#sidebar-toggle').show();
+                } else {
+                    $('#sidebar-toggle').hide();
+                    $('.sidebar').removeClass('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

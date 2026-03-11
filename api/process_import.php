@@ -2,7 +2,7 @@
 session_start();
 require_once 'require.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['user_nivel'] !== 'Administrador') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_nivel'], ['Administrador', 'Gerente', 'Auxiliar'])) {
     header("Location: ../index.php");
     exit();
 }

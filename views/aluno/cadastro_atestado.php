@@ -86,11 +86,11 @@ while ($t = mysqli_fetch_assoc($result_turmas)) {
                     <div id="field-datas" style="display:none; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
                         <div>
                             <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Data de Início:</label>
-                            <input type="date" name="data_inicio" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" required>
+                            <input type="date" name="data_inicio" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;">
                         </div>
                         <div>
                             <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Data de Término:</label>
-                            <input type="date" name="data_fim" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;" required>
+                            <input type="date" name="data_fim" class="form-control" style="padding-left: 1rem; background: #fff; border: 1px solid #cbd5e1; color: #334155;">
                         </div>
                     </div>
 
@@ -182,15 +182,25 @@ while ($t = mysqli_fetch_assoc($result_turmas)) {
         tipoDoc.addEventListener('change', function() {
             const val = this.value;
             
+            // Elementos de data
+            const inputDataInicio = document.querySelector('input[name="data_inicio"]');
+            const inputDataFim = document.querySelector('input[name="data_fim"]');
+            
             // Reset fields
             dynamicContainer.style.display = val ? 'block' : 'none';
             fieldOutroMotivo.style.display = 'none';
             fieldDatas.style.display = 'none';
             fieldCID.style.display = 'none';
             fieldJudicial.style.display = 'none';
+            
+            // Reset required das datas para evitar erro de invalid form control not focusable
+            inputDataInicio.required = false;
+            inputDataFim.required = false;
 
             if (val === 'atestado_medico') {
                 fieldDatas.style.display = 'grid';
+                inputDataInicio.required = true;
+                inputDataFim.required = true;
                 fieldCID.style.display = 'block';
                 labelCID.innerText = 'CID ou MOTIVO do afastamento:';
             } else if (val === 'tiro_guerra') {

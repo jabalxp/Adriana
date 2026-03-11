@@ -167,12 +167,42 @@ body {
     background: #f1f5f9;
 }
 
+@media (max-width: 1024px) {
+    .dashboard-layout {
+        grid-template-columns: 240px 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 .sidebar {
     background: #ff3b3b;
     color: white;
     padding: 2rem 0;
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        transform: translateX(-100%);
+        width: 280px;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
 }
 
 .sidebar-logo {
@@ -207,9 +237,12 @@ body {
     color: white;
 }
 
+.sidebar-footer {
+    padding: 1rem 2rem 2rem 2rem;
+}
+
 .main-content {
     padding: 1.5rem;
-    overflow-y: auto;
 }
 
 .top-bar {
@@ -221,6 +254,15 @@ body {
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .top-bar {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 .user-info {
@@ -263,56 +305,131 @@ body {
     margin-bottom: 2rem;
 }
 
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .stat-card {
     background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     position: relative;
     border-bottom: 4px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle at top right, rgba(0, 0, 0, 0.03) 0%, transparent 60%);
+    border-radius: 50%;
+    z-index: -1;
+    transform: translate(30%, -30%);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card.red {
     border-bottom-color: #ef4444;
 }
 
+.stat-card.red .stat-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
 .stat-card.blue {
     border-bottom-color: #3b82f6;
+}
+
+.stat-card.blue .stat-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
 }
 
 .stat-card.green {
     border-bottom-color: #22c55e;
 }
 
+.stat-card.green .stat-icon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
 .stat-card.orange {
     border-bottom-color: #f59e0b;
+}
+
+.stat-card.orange .stat-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
 }
 
 .stat-card.purple {
     border-bottom-color: #a855f7;
 }
 
+.stat-card.purple .stat-icon {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
 .stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1);
 }
 
 .stat-info h3 {
     font-size: 2.25rem;
-    font-weight: 700;
-    color: #1e293b;
+    font-weight: 800;
+    color: #0f172a;
     margin-bottom: 0.25rem;
+    line-height: 1.1;
 }
 
 .stat-info p {
     color: #64748b;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .content-card {
@@ -321,6 +438,13 @@ body {
     padding: 2rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .content-card {
+        padding: 1rem;
+    }
 }
 
 /* ===== Table Styles ===== */

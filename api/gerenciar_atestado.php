@@ -84,6 +84,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        case 'confirmar_recebimento':
+            $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+            if (!$id) {
+                echo json_encode(['success' => false, 'message' => 'ID inválido.']);
+                exit();
+            }
+
+            // O professor (Auxiliar) confirma que recebeu a notificação do Gerente
+            $stmt = mysqli_prepare($conn, "UPDATE atestados SET professor_confirmou = 1 WHERE id = ?");
+            mysqli_stmt_bind_param($stmt, "i", $id);
+
+            if (mysqli_stmt_execute($stmt)) {
+                echo json_encode(['success' => true, 'message' => 'Recebimento confirmado!']);
+            }
+            else {
+                echo json_encode(['success' => false, 'message' => 'Erro ao confirmar recebimento.']);
+            }
+            break;
+
         default:
             echo json_encode(['success' => false, 'message' => 'Ação inválida.']);
             break;

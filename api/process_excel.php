@@ -2,8 +2,8 @@
 session_start();
 require_once 'require.php';
 
-// Verificar se é Admin
-if (!isset($_SESSION['user_id']) || $_SESSION['user_nivel'] !== 'Administrador') {
+// Verificar se tem permissão (Administrador, Gerente, Auxiliar)
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_nivel'], ['Administrador', 'Gerente', 'Auxiliar'])) {
     header("Location: ../views/login.php");
     exit();
 }
