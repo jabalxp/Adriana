@@ -97,12 +97,14 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -116,10 +118,8 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
                 </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
-                </li>
+                <?php
+endif; ?>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
                 <li class="nav-item" style="list-style:none;">
@@ -136,7 +136,7 @@ $user_nivel = $_SESSION['user_nivel'];
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
-                        <span style="display:block; font-size: 0.8rem; color: #64748b;">Bem-vindo</span>
+                        <span style="display:block; font-size: 0.8rem; color: #64748b;">Bem-vindo, <strong><?php echo $user_nivel; ?></strong></span>
                         <strong style="font-weight: 700;"><?php echo $user_nome; ?></strong>
                     </div>
                 </div>
@@ -161,13 +161,14 @@ $user_nivel = $_SESSION['user_nivel'];
                 <table id="table-atestados">
                     <thead>
                         <tr>
-                            <th>Data</th>
+                            <th>Data/Hora</th>
                             <th>Aluno</th>
                             <th>Turma</th>
                             <th>Tipo</th>
                             <th>CID / Motivo</th>
                             <th>Anexo</th>
                             <th>Status</th>
+                            <th>Confirmação</th>
                             <?php if ($user_nivel !== 'Auxiliar'): ?>
                             <th>Ações</th>
                             <?php
@@ -208,49 +209,76 @@ endif; ?>
     $(document).ready(function() {
         function carregarAtestados() {
             const status = $('#filter-status').val();
-            const colSpan = '<?php echo $user_nivel; ?>' === 'Auxiliar' ? 7 : 8;
+            const colSpan = '<?php echo $user_nivel; ?>' === 'Auxiliar' ? 8 : 9;
             $('#lista-atestados').html(`<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem;">Carregando atestados...</td></tr>`);
             
-            $.post('../../api/gerenciar_atestado.php', { action: 'get_atestados', status: status }, function(response) {
-                const res = JSON.parse(response);
-                if (res.success) {
-                    let html = '';
-                    if (res.data.length === 0) {
-                        html = `<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem; color: #64748b;">Nenhum documento encontrado.</td></tr>`;
-                    } else {
-                        res.data.forEach(a => {
-                            const data = new Date(a.created_at).toLocaleDateString('pt-BR');
-                            const statusClass = 'status-' + a.status.toLowerCase();
-                            const isAuxiliar = '<?php echo $user_nivel; ?>' === 'Auxiliar';
-                            
-                            html += `
-                                <tr>
-                                    <td>${data}</td>
-                                    <td><strong>${a.aluno_nome}</strong></td>
-                                    <td>${a.curso_nome} - ${a.turma_nome}</td>
-                                    <td>${a.tipo.replace('_', ' ')}</td>
-                                    <td><span title="CID ou Motivo">${a.cid_motivo || a.codigo_judicial || a.outro_motivo_desc || '---'}</span></td>
-                                    <td>
-                                        <button class="btn-status btn-view-attachment" data-path="${a.anexo_path}" title="Ver Anexo">
-                                            <i class="fa-solid fa-file-lines"></i> Ver
-                                        </button>
-                                    </td>
-                                    <td><span class="status-badge ${statusClass}">${a.status}</span></td>
-                                    ${!isAuxiliar ? `
-                                    <td>
-                                        <div style="display:flex; gap:0.5rem;">
-                                            <button class="btn-status btn-accept" data-id="${a.id}" title="Aceitar" ${a.status !== 'Pendente' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}><i class="fa-solid fa-check"></i></button>
-                                            <button class="btn-status btn-reject" data-id="${a.id}" title="Recusar" ${a.status !== 'Pendente' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}><i class="fa-solid fa-xmark"></i></button>
-                                        </div>
-                                    </td>
-                                    ` : ''}
-                                </tr>
-                            `;
-                        });
+            $.ajax({
+                url: '../../api/gerenciar_atestado.php',
+                type: 'POST',
+                data: { action: 'get_atestados', status: status },
+                success: function(response) {
+                    try {
+                        const res = JSON.parse(response);
+                        if (res.success) {
+                            let html = '';
+                            if (res.data.length === 0) {
+                                html = `<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem; color: #64748b;">Nenhum documento encontrado para suas turmas.</td></tr>`;
+                            } else {
+                                res.data.forEach(a => {
+                                    const createdAt = new Date(a.created_at);
+                                    const dataFormatada = createdAt.toLocaleDateString('pt-BR') + ' ' + 
+                                                         createdAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                    const statusClass = 'status-' + (a.status || 'pendente').toLowerCase();
+                                    const isAuxiliar = '<?php echo $user_nivel; ?>' === 'Auxiliar';
+                                    
+                                    const statusDisplay = (a.status === 'Recusado') 
+                                        ? '<span style="color: #22c55e;"><i class="fa-solid fa-check-double"></i> Concluída</span>' 
+                                        : (a.professor_confirmou == 1 
+                                            ? '<span style="color: #22c55e;"><i class="fa-solid fa-check-double"></i> Recebido</span>' 
+                                            : (isAuxiliar && a.status === 'Aceito'
+                                                ? `<button class="btn-status btn-confirm-receipt" data-id="${a.id}" title="Confirmar Recebimento" style="color: #3b82f6; border-color: #3b82f6;">
+                                                    <i class="fa-solid fa-clipboard-check"></i> Confirmar
+                                                   </button>`
+                                                : '<span style="color: #64748b;"><i class="fa-solid fa-clock"></i> Pendente</span>'));
+
+                                    html += `
+                                        <tr>
+                                            <td>${dataFormatada}</td>
+                                            <td><strong>${a.aluno_nome}</strong></td>
+                                            <td>${a.curso_nome} - ${a.turma_nome}</td>
+                                            <td>${(a.tipo || '').replace('_', ' ')}</td>
+                                            <td><span title="CID ou Motivo">${a.cid_motivo || a.codigo_judicial || a.outro_motivo_desc || '---'}</span></td>
+                                            <td>
+                                                <button class="btn-status btn-view-attachment" data-path="${a.anexo_path}" title="Ver Anexo">
+                                                    <i class="fa-solid fa-file-lines"></i> Ver
+                                                </button>
+                                            </td>
+                                            <td><span class="status-badge ${statusClass}">${a.status}</span></td>
+                                            <td>${statusDisplay}</td>
+                                            ${!isAuxiliar ? `
+                                            <td>
+                                                <div style="display:flex; gap:0.5rem;">
+                                                    <button class="btn-status btn-accept" data-id="${a.id}" title="Aceitar" ${a.status !== 'Pendente' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}><i class="fa-solid fa-check"></i></button>
+                                                    <button class="btn-status btn-reject" data-id="${a.id}" title="Recusar" ${a.status !== 'Pendente' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}><i class="fa-solid fa-xmark"></i></button>
+                                                </div>
+                                            </td>
+                                            ` : ''}
+                                        </tr>
+                                    `;
+                                });
+                            }
+                            $('#lista-atestados').html(html);
+                        } else {
+                            $('#lista-atestados').html(`<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem; color: #ef4444;">Erro: ${res.message}</td></tr>`);
+                        }
+                    } catch (e) {
+                        console.error('Erro ao processar JSON:', e, response);
+                        $('#lista-atestados').html(`<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem; color: #ef4444;">Erro na resposta do servidor. Verifique o console.</td></tr>`);
                     }
-                    $('#lista-atestados').html(html);
-                } else {
-                    alert(res.message);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro na requisição AJAX:', error);
+                    $('#lista-atestados').html(`<tr><td colspan="${colSpan}" style="text-align:center; padding: 3rem; color: #ef4444;">Erro de conexão com o servidor.</td></tr>`);
                 }
             });
         }
@@ -294,6 +322,20 @@ endif; ?>
             const id = $(this).data('id');
             if (confirm('Deseja recusar este atestado?')) {
                 updateStatus(id, 'Recusado');
+            }
+        });
+
+        $(document).on('click', '.btn-confirm-receipt', function() {
+            const id = $(this).data('id');
+            if (confirm('Deseja confirmar que recebeu este atestado?')) {
+                $.post('../../api/gerenciar_atestado.php', { action: 'confirmar_recebimento', id: id }, function(response) {
+                    const res = JSON.parse(response);
+                    if (res.success) {
+                        carregarAtestados();
+                    } else {
+                        alert(res.message);
+                    }
+                });
             }
         });
 

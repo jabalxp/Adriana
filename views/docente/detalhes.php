@@ -115,12 +115,14 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -130,13 +132,8 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <li class="nav-item active">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
                 </li>
-                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
-                </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
                 </li>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">

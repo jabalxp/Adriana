@@ -38,28 +38,25 @@ $user_nivel = $_SESSION['user_nivel'];
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
                 <li class="nav-item">
                     <a href="atestado.php"><i class="fa-solid fa-clipboard-check"></i> Atestados</a>
                 </li>
-                <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="detalhes.php"><i class="fa-solid fa-chart-pie"></i> Detalhes</a>
                 </li>
-                <li class="nav-item active">
-                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
-                </li>
-                <?php endif; ?>
                 <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
+                    <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
                 </li>
             </nav>
             <div class="sidebar-footer">
@@ -204,7 +201,12 @@ $user_nivel = $_SESSION['user_nivel'];
                         <h4 style="font-weight: 700;">Importar via Excel (.xlsx)</h4>
                     </div>
                     <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #22c55e;">
-                        <p>Você pode importar o arquivo **alunos_extraidos.xlsx** gerado anteriormente ou qualquer outro arquivo Excel com o mesmo formato.</p>
+                        <p style="margin-bottom: 1rem;">O arquivo Excel deve seguir o modelo do seu arquivo <strong>importaaluno.xlsx</strong> com as seguintes colunas:</p>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <span style="background: #dcfce7; color: #166534; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; border: 1px solid #bbf7d0;">Turma Sigla</span>
+                            <span style="background: #dcfce7; color: #166534; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; border: 1px solid #bbf7d0;">Nome Curso</span>
+                            <span style="background: #dcfce7; color: #166534; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; border: 1px solid #bbf7d0;">Nome Alunos</span>
+                        </div>
                     </div>
 
                     <form action="../../api/process_excel.php" method="POST" enctype="multipart/form-data">

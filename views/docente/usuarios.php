@@ -72,9 +72,6 @@ $usuarios = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
                 </li>
                 <?php endif; ?>
-                <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
-                </li>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
                 <li class="nav-item" style="list-style:none;">

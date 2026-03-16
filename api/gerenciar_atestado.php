@@ -17,28 +17,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'get_atestados':
             $status = $_POST['status'] ?? '';
 
-            $sql = "SELECT a.*, al.nome as aluno_nome, t.nome as turma_nome, c.nome as curso_nome 
+            $sql = "SELECT DISTINCT a.*, al.nome as aluno_nome, t.nome as turma_nome, c.nome as curso_nome 
                     FROM atestados a
                     JOIN alunos al ON a.aluno_id = al.id
                     JOIN turmas t ON a.turma_id = t.id
-                    JOIN cursos c ON t.curso_id = c.id";
+                    LEFT JOIN cursos c ON t.curso_id = c.id";
 
             $conditions = [];
             $params = [];
             $types = "";
 
-            // Filtro por nível: Auxiliar só vê turmas que ele leciona (se houver essa relação forte)
-            // No banco atual, docente_turmas vincula professor a turma.
             if ($user_nivel === 'Auxiliar') {
-                $sql .= " JOIN docente_turmas dt ON t.id = dt.turma_id AND dt.usuario_id = ?";
-                $params[] = $user_id;
-                $types .= "i";
+                if ($status === 'Pendente') {
+                    $conditions[] = "(a.status = 'Pendente' OR (a.status = 'Aceito' AND a.professor_confirmou = 0))";
+                }
+                elseif (!empty($status)) {
+                    $conditions[] = "a.status = ?";
+                    $params[] = $status;
+                    $types .= "s";
+                }
             }
-
-            if (!empty($status)) {
-                $conditions[] = "a.status = ?";
-                $params[] = $status;
-                $types .= "s";
+            else {
+                if (!empty($status)) {
+                    $conditions[] = "a.status = ?";
+                    $params[] = $status;
+                    $types .= "s";
+                }
             }
 
             if (count($conditions) > 0) {

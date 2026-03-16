@@ -40,12 +40,14 @@ $turmas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <li class="nav-item active">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -59,10 +61,8 @@ $turmas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <li class="nav-item">
                     <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
                 </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
-                </li>
+                <?php
+endif; ?>
             </nav>
             <div class="sidebar-footer" style="padding: 2rem;">
                 <li class="nav-item" style="list-style:none;">
@@ -79,7 +79,7 @@ $turmas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <div class="user-info">
                     <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
                     <div>
-                        <span style="display:block; font-size: 0.8rem; color: #64748b;">Bem-vindo</span>
+                        <span style="display:block; font-size: 0.8rem; color: #64748b;">Bem-vindo, <strong><?php echo $user_nivel; ?></strong></span>
                         <strong style="font-weight: 700;"><?php echo $user_nome; ?></strong>
                     </div>
                 </div>

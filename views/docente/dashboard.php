@@ -65,12 +65,14 @@ $aguardando_analise = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM
                 <li class="nav-item">
                     <a href="usuarios.php"><i class="fa-solid fa-users-gear"></i> Usuários</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <?php if ($user_nivel !== 'Auxiliar'): ?>
                 <li class="nav-item">
                     <a href="docentes.php"><i class="fa-solid fa-user-tie"></i> Docentes</a>
                 </li>
-                <?php endif; ?>
+                <?php
+endif; ?>
                 <li class="nav-item">
                     <a href="turmas.php"><i class="fa-solid fa-users-rectangle"></i> Turmas</a>
                 </li>
@@ -84,10 +86,8 @@ $aguardando_analise = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM
                 <li class="nav-item">
                     <a href="importacao.php"><i class="fa-solid fa-file-import"></i> Importar Excel</a>
                 </li>
-                <?php endif; ?>
-                <li class="nav-item">
-                    <a href="calendario.php"><i class="fa-solid fa-calendar-days"></i> Calendário</a>
-                </li>
+                <?php
+endif; ?>
             </nav>
             <div class="sidebar-footer">
                 <li class="nav-item" style="list-style:none;">
@@ -163,6 +163,7 @@ $aguardando_analise = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM
                 <table id="tabela-atestados" class="display" style="width:100%">
                     <thead>
                         <tr>
+                            <th>DATA/HORA</th>
                             <th>ALUNO</th>
                             <th>TURMA</th>
                             <th>TIPO</th>
@@ -173,28 +174,31 @@ $aguardando_analise = mysqli_fetch_row(mysqli_query($conn, "SELECT COUNT(*) FROM
                     <tbody>
                             <?php foreach ($atestados as $at): ?>
                             <tr>
+                                <td><?php echo date('d/m/Y H:i', strtotime($at['created_at'])); ?></td>
                                 <td><strong><?php echo $at['aluno_nome']; ?></strong></td>
                                 <td><?php echo $at['turma_nome']; ?></td>
                                 <td><?php echo ucwords(str_replace('_', ' ', $at['tipo'])); ?></td>
-                                <td>
-                                    <span class="badge <?php echo $at['status'] === 'Pendente' ? 'pendente' : ($at['status'] === 'Aceito' ? 'aceito' : 'recusado'); ?>">
-                                        <?php echo $at['status']; ?>
-                                    </span>
-                                </td>
-                                <td style="text-align: right; white-space: nowrap;">
-                                    <?php if ($user_nivel === 'Gerente' && $at['status'] === 'Pendente'): ?>
-                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Aceito" style="color: #22c55e; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Aceitar"><i class="fa-solid fa-check"></i></button>
-                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Recusado" style="color: #ef4444; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Recusar"><i class="fa-solid fa-xmark"></i></button>
-                                    <?php
-    elseif ($user_nivel === 'Auxiliar' && $at['status'] === 'Aceito' && !$at['professor_confirmou']): ?>
-                                        <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="confirmar" style="color: #3b82f6; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Confirmar Recebimento"><i class="fa-solid fa-clipboard-check"></i></button>
-                                    <?php
-    endif; ?>
-                                    
-                                    <?php if ($at['professor_confirmou']): ?>
-                                        <span style="color: #22c55e; margin-right: 0.5rem;" title="Professor Confirmou"><i class="fa-solid fa-check-double"></i></span>
-                                    <?php
-    endif; ?>
+                                    <td>
+                                        <span class="badge <?php echo $at['status'] === 'Pendente' ? 'pendente' : ($at['status'] === 'Aceito' ? 'aceito' : 'recusado'); ?>">
+                                            <?php echo $at['status']; ?>
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right; white-space: nowrap;">
+                                        <?php if ($at['status'] === 'Recusado'): ?>
+                                            <span style="color: #22c55e; margin-right: 0.5rem;" title="Concluída"><i class="fa-solid fa-check-double"></i> Concluída</span>
+                                        <?php elseif ($user_nivel === 'Gerente' && $at['status'] === 'Pendente'): ?>
+                                            <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Aceito" style="color: #22c55e; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Aceitar"><i class="fa-solid fa-check"></i></button>
+                                            <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="Recusado" style="color: #ef4444; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Recusar"><i class="fa-solid fa-xmark"></i></button>
+                                        <?php
+        elseif ($user_nivel === 'Auxiliar' && $at['status'] === 'Aceito' && !$at['professor_confirmou']): ?>
+                                            <button class="btn-acao-atestado" data-id="<?php echo (int)$at['id']; ?>" data-acao="confirmar" style="color: #3b82f6; margin-right: 0.5rem; background: none; border: none; cursor: pointer;" title="Confirmar Recebimento"><i class="fa-solid fa-clipboard-check"></i></button>
+                                        <?php
+        endif; ?>
+                                        
+                                        <?php if ($at['status'] === 'Aceito' && $at['professor_confirmou']): ?>
+                                            <span style="color: #22c55e; margin-right: 0.5rem;" title="Professor Confirmou"><i class="fa-solid fa-check-double"></i></span>
+                                        <?php
+        endif; ?>
 
                                     <a href="../../<?php echo htmlspecialchars($at['anexo_path']); ?>" target="_blank" style="color: #64748b;" title="Ver Anexo"><i class="fa-solid fa-file-image"></i></a>
                                 </td>
@@ -238,7 +242,7 @@ endforeach; ?>
         $('#tabela-atestados').DataTable({
             language: ptBr,
             pageLength: 10,
-            order: [[0, 'asc']],
+            order: [[0, 'desc']],
             columnDefs: [{ orderable: false, targets: [4] }]
         });
 
